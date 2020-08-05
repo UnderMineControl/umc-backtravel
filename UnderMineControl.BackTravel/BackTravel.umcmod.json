@@ -1,0 +1,14 @@
+{
+	"Name": "Back Travel",
+	"TagLine": "Ports bwdy's back travel mod to UMC",
+	"Author": "calico-crusade",
+	"Versions": {
+		"Mod": "1.0.0.0",
+		"Game": "0.7.1.6",
+		"Api": "1.0.0.0"
+	},
+	"EntryFiles": [
+		"UnderMineControl.BackTravel.dll"
+	],
+	"Url": "https://github.com/calico-crusade/umc-backtravel"
+}

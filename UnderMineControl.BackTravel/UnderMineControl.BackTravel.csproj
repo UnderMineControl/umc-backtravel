@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BehaviorDesigner">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\BehaviorDesigner.dll</HintPath>
+    </Reference>
+    <Reference Include="BehaviorDesigner.Runtime">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\BehaviorDesigner.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="FMOD.Unity">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\FMOD.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="UnderMine">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\UnderMine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnderMineControl.API">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\BepInEx\plugins\UnderMineControl\UnderMineControl.API.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>E:\Steam\NewSteam\steamapps\common\UnderMine\UnderMine_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="BackTravel.umcmod.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
