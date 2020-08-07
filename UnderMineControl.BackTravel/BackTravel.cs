@@ -11,41 +11,41 @@ namespace UnderMineControl.BackTravel
     using Thor;
     using UnityEngine;
 
-    public class BackTravel : IMod
+    public class BackTravel : Mod
     {
-        private static IPatcher _patcher;
-        private static IGame _game;
-        private static API.ILogger _logger;
-        private static IEvents _events;
+        private static BackTravel _instance;
 
         private static bool _showAll = false;
 
-        public BackTravel(IPatcher patcher, IGame game, API.ILogger logger, IEvents events)
+        public BackTravel()
         {
-            _game = game;
-            _patcher = patcher;
-            _logger = logger;
-            _events = events;
+            _instance = this;
         }
 
-        public void Initialize()
+        public override void Initialize()
         {
-            _patcher.Patch(this, typeof(WarpPopup), "Initialize", "WarpPopup", null, typeof(object), typeof(Entity));
+            Patcher.Patch(this, typeof(WarpPopup), "Initialize", "WarpPopup", null, typeof(object), typeof(Entity));
 
-            _events.OnGameUpdated += (a, b) =>
+            Events.OnGameUpdated += (a, b) =>
             {
-                if (_game.KeyDown(KeyCode.Keypad1))
+                if (GameInstance.KeyDown(KeyCode.Keypad1))
                 {
                     _showAll = !_showAll;
-                    _logger.Debug("Showing All Maps: " + _showAll);
+                    Logger.Debug("Showing All Maps: " + _showAll);
                 }
             };
         }
 
-
         public static bool WarpPopup(WarpPopup __instance, object data, Entity owner)
         {
-            _logger.Info("Intercepting warp menu to allow back-travel...");
+            _instance.WrapPopupInstance(__instance, data, owner);
+            //return false to stop the original from running
+            return false;
+        }
+
+        private void WrapPopupInstance(WarpPopup __instance, object data, Entity owner)
+        {
+            Logger.Info("Intercepting warp menu to allow back-travel...");
 
             //snag some private fields via reflection helper
             var mListItems = GetField<List<WarpListItem>>(__instance, "mListItems");
@@ -58,7 +58,7 @@ namespace UnderMineControl.BackTravel
 
             BaseInitialization(__instance, data, owner);
 
-            _logger.Debug("Intialized.");
+            Logger.Debug("Intialized.");
 
             if (__instance.RectTransform.anchoredPosition.y < -200.0)
                 __instance.Animator.SetInteger("state", 1);
@@ -67,8 +67,8 @@ namespace UnderMineControl.BackTravel
 
             DOTween.To
             (
-                () => m_container.Radius, 
-                x => m_container.Radius = x, 
+                () => m_container.Radius,
+                x => m_container.Radius = x,
                 m_container.Radius,
                 0.25f
             ).OnComplete(() => SetProperty(__instance, "Ready", true));
@@ -76,14 +76,13 @@ namespace UnderMineControl.BackTravel
             m_container.Radius = 0.0f;
             WarpListItem warpListItem = null;
 
-            _logger.Debug("Setting up map");
+            Logger.Debug("Setting up map");
 
-            
             //let's choose our destinations
             foreach (var map in m_maps)
             {
-                if ((map.IsDiscovered && (map.UserData == -1 || map.UserData > Game.Instance.Simulation.Zone.Data.ZoneNumber)) ||
-                    (map.IsDiscovered && map.UserData < Game.Instance.Simulation.Zone.Data.ZoneNumber) ||
+                if ((map.IsDiscovered && (map.UserData == -1 || map.UserData > GameInstance.Simulation.Zone.Data.ZoneNumber)) ||
+                    (map.IsDiscovered && map.UserData < GameInstance.Simulation.Zone.Data.ZoneNumber) ||
                     (_showAll))
                 {
                     warpListItem = warpListItem == null ? m_itemPrefab : Object.Instantiate(m_itemPrefab, m_container.transform);
@@ -92,17 +91,16 @@ namespace UnderMineControl.BackTravel
                 }
             }
 
-
             //do we have anywhere to go? handle accordingly.
             if (mListItems.Count > 0)
             {
-                _logger.Debug("We have a place");
+                Logger.Debug("We have a place");
                 m_content.SetActive(value: true);
                 m_reminder.SetActive(value: false);
             }
             else
             {
-                _logger.Debug("we don't have a place");
+                Logger.Debug("we don't have a place");
                 m_content.SetActive(value: false);
                 m_reminder.SetActive(value: true);
                 Object.Destroy(m_itemPrefab.gameObject);
@@ -111,13 +109,10 @@ namespace UnderMineControl.BackTravel
             //hook up the closed event delegate (these things are tricky in reflection)
             var m = typeof(WarpPopup).GetMethod("OnClosed", BindingFlags.NonPublic | BindingFlags.Instance);
             __instance.RegisterEvent(UIEvent.EventType.Closed, (Popup.EventHandler)Delegate.CreateDelegate(typeof(Popup.EventHandler), __instance, m));
-            _logger.Debug("Finished");
-            //return false to stop the original from running
-            return false;
-
+            Logger.Debug("Finished");
         }
 
-        public static void BaseInitialization(WarpPopup __instance, object data, Entity owner)
+        private void BaseInitialization(WarpPopup __instance, object data, Entity owner)
         {
             SetField(__instance, "mTimer", 0f, typeof(Popup));
             SetField(__instance, "mData", data, typeof(Popup));
@@ -128,7 +123,7 @@ namespace UnderMineControl.BackTravel
             __instance.CanvasGroup.interactable = __instance.CanvasGroup.blocksRaycasts = true;
 
             if (__instance.InputContext != null)
-                Game.Instance.InputSystem.AddContext(_game.Player.ID, __instance.InputContext);
+                Game.Instance.InputSystem.AddContext(GameInstance.Player.ID, __instance.InputContext);
 
             Invoke(__instance, "Layout");
             RuntimeManager.PlayOneShot(GetField<string>(__instance, "m_openAudio", typeof(Popup)), new Vector3());
